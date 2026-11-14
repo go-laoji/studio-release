@@ -1,0 +1,18 @@
+name: Sync Docker Hub overview
+on:
+  push:
+    branches: [codex/dockerhub-overview-79b1ab2a]
+    paths: ['.overview-sync/README.md']
+permissions:
+  contents: read
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Synchronize and verify repository overview
+        env:
+          HUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          HUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: python3 .overview-sync/sync.py
