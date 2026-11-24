@@ -4,28 +4,30 @@
 
 [项目站点（sub.scrm.sale）](https://sub.scrm.sale/)
 
-本仓库是项目的对外介绍入口。后续版本通过 Docker Hub 分发，GitHub Releases 停止发布新的安装包。
+本仓库是项目的对外介绍入口。后续版本通过 Docker Hub 和 GHCR 分发，GitHub Releases 提供使用说明和镜像链接，不再发布新的安装包。
 
 ## Docker 镜像
 
-镜像计划发布到 Docker Hub，名称为 `golaoji/trace-studio-server`。镜像发布后，可拉取 `golaoji/trace-studio-server:latest`，也可将下方命令中的 `latest` 换成同一个已发布的版本标签。
+镜像已发布到 Docker Hub 和 GHCR。下方示例使用已发布的 `v1.1.27-r1`，也可替换为其他已发布的版本标签。两个仓库均支持匿名拉取。
 
 [Docker Hub 镜像标签](https://hub.docker.com/r/golaoji/trace-studio-server/tags)
 
+- Docker Hub：`golaoji/trace-studio-server:v1.1.27-r1`
+- [GHCR 镜像](https://github.com/users/go-laoji/packages/container/package/trace-studio-server)：`ghcr.io/go-laoji/trace-studio-server:v1.1.27-r1`
+
 ## 启动
 
-下面的命令适用于 `linux/amd64` 镜像。ARM64 主机需要在 Docker 中启用 x86-64 模拟。镜像已包含 Web 工作台、工作流运行所需的 Node.js 和浏览器。
+镜像同时提供 `linux/amd64` 和 `linux/arm64`，Docker 会根据主机架构自动选择，无需启用跨架构模拟。镜像已包含 Web 工作台、工作流运行所需的 Node.js 和浏览器。
 
 ```sh
-docker pull --platform linux/amd64 golaoji/trace-studio-server:latest
+docker pull golaoji/trace-studio-server:v1.1.27-r1
 
 docker run -d --name trace-studio-server \
-  --platform linux/amd64 \
   --restart unless-stopped \
   -p 127.0.0.1:9223:8080 \
   -v trace-studio-data:/var/lib/moli-studio \
   -v trace-studio-ocr:/home/node/.oar/models/ppocr-v6-small \
-  golaoji/trace-studio-server:latest
+  golaoji/trace-studio-server:v1.1.27-r1
 ```
 
 启动后，在 Docker 宿主机的浏览器打开 `http://127.0.0.1:9223`。可用 `curl -fsS http://127.0.0.1:9223/api/health` 检查服务状态，或用 `docker logs --tail 100 trace-studio-server` 查看启动日志。
@@ -35,7 +37,7 @@ docker run -d --name trace-studio-server \
 Nginx 和 Docker 在同一台宿主机时，可以保留上面的本机端口映射，由 Nginx 对外提供 HTTPS。在前面的 `docker run` 命令中，将最后一行替换为下面两行，为容器内的服务启用 `--trust-proxy` 和 `--public-origin`。
 
 ```sh
-  golaoji/trace-studio-server:latest \
+  golaoji/trace-studio-server:v1.1.27-r1 \
   moli-studio-server --trust-proxy --public-origin https://studio.example.com
 ```
 
